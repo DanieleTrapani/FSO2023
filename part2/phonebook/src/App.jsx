@@ -32,6 +32,12 @@ const App = () => {
     setNewNumber("");
   };
 
+  const deletePerson = (id) => {
+    const newPersons = filteredPersons.filter((person) => person.id !== id);
+    peopleService.remove(id);
+    setPersons(newPersons);
+  };
+
   const filterEntries = (event) => {
     setFilter(event.target.value);
   };
@@ -53,7 +59,10 @@ const App = () => {
         setNewName={setNewName}
         setNewNumber={setNewNumber}
       />
-      <PeopleList filteredPersons={filteredPersons} />
+      <PeopleList
+        filteredPersons={filteredPersons}
+        deletePerson={deletePerson}
+      />
     </>
   );
 };
