@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PeopleList from "./PeopleList";
 import Form from "./Form";
 import Filter from "./Filter";
+import Notification from "./Notification";
 import peopleService from "./services/people";
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   useEffect(() => {
     peopleService.getAll().then((response) => {
@@ -28,6 +31,7 @@ const App = () => {
         peopleService.update(person.id, person);
         setNewName("");
         setNewNumber("");
+        changeNotification(`${newName} is updated`, "success");
       }
       return;
     }
@@ -39,12 +43,23 @@ const App = () => {
     setPersons([...persons, newPerson]);
     setNewName("");
     setNewNumber("");
+    changeNotification(`${newName} is added`, "success");
+  };
+
+  const changeNotification = (message, messageType) => {
+    setMessage(message);
+    setMessageType(messageType);
+    setTimeout(() => {
+      setMessage(null);
+      setMessageType(null);
+    }, 3000);
   };
 
   const deletePerson = (id) => {
     const newPersons = filteredPersons.filter((person) => person.id !== id);
     peopleService.remove(id);
     setPersons(newPersons);
+    changeNotification("Person deleted", "error");
   };
 
   const filterEntries = (event) => {
@@ -59,6 +74,7 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      <Notification message={message} messageType={messageType} />
       <Filter filterEntries={filterEntries} filter={filter} />
       <br />
       <Form
