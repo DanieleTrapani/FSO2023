@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PeopleList from "./PeopleList";
 import Form from "./Form";
 import Filter from "./Filter";
+import peopleService from "./services/people";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,13 +11,9 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3001/persons")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setPersons(data);
-      });
+    peopleService.getAll().then((response) => {
+      setPersons(response.data);
+    });
   }, []);
 
   const addPerson = (event) => {
@@ -25,7 +22,12 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
       return;
     }
-    setPersons([...persons, { name: newName, number: newNumber }]);
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    };
+    peopleService.create(newPerson);
+    setPersons([...persons, newPerson]);
     setNewName("");
     setNewNumber("");
   };
