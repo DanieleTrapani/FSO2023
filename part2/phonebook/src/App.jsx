@@ -16,17 +16,26 @@ const App = () => {
     });
   }, []);
 
-  const addPerson = (event) => {
+  const addPerson = async (event) => {
     event.preventDefault();
     if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
+      const shouldUpdate = confirm(
+        `${newName} is already added to phonebook, replace old number with new one?`
+      );
+      if (shouldUpdate) {
+        const person = persons.find((person) => person.name === newName);
+        person.number = newNumber;
+        peopleService.update(person.id, person);
+        setNewName("");
+        setNewNumber("");
+      }
       return;
     }
-    const newPerson = {
+    const newObject = {
       name: newName,
       number: newNumber,
     };
-    peopleService.create(newPerson);
+    const newPerson = await peopleService.create(newObject);
     setPersons([...persons, newPerson]);
     setNewName("");
     setNewNumber("");
